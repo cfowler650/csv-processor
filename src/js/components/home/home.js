@@ -1,26 +1,29 @@
 import React, { useState } from "react";
 import "./home.css";
 import icon from "../images/google-docs.svg";
-import cloudImage from "../images/cloudimage.png";
+import cloudImage from "../images/cloudimage.svg";
+import logo from "../images/logo.png";
 import { useToasts } from "react-toast-notifications";
 
 const Header = () => {
   return (
     <div className="header">
-      <h1>Import CSV</h1>
+      <div className="header-img">
+        <img src={logo} width="100%" />
+      </div>
     </div>
   );
 };
 
-const FileImporter = ({ _handleSelectFile, selectedFile }) => {
+const FileImporter = ({ selectedFile }) => {
   return (
     <div>
       {/*TODO: change styles here so button doesnt jump */}
       <div className="fileImporter">
-        <div className="instructions">
+        {/* <div className="instructions">
           Select file or drag and drop to upload a CSV file. You can import one
           csv file at a time.
-        </div>
+        </div> */}
         {selectedFile && (
           <div className="selectedFile">
             <img className="selectedFileIcon" src={icon} />
@@ -28,20 +31,34 @@ const FileImporter = ({ _handleSelectFile, selectedFile }) => {
           </div>
         )}
       </div>
-      <button className="btn" onClick={_handleSelectFile}>
-        Select File
-      </button>
     </div>
   );
 };
 
-const FileUploader = () => {
+const FileUploader = ({ _handleSelectFile }) => {
   return (
-    <div className="fileUploader">
-      <div className="cloudImgContainer">
-        <img src={cloudImage} width="100%" />
+    <>
+      <div className="fileUploader">
+        <div className="fileUploaderContainer">
+          <div className="cloud">
+            <div className="cloudImgContainer">
+              <img className="cloudImg" src={cloudImage} width="100%" />
+            </div>
+          </div>
+          <div className="dragDropText">
+            <span>Drag & Drop files here</span>
+          </div>
+          <div className="orText">
+            <span>or</span>
+          </div>
+          <div className="buttonContainer">
+            <button className="btn" onClick={_handleSelectFile}>
+              Select File
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -84,11 +101,8 @@ const Home = () => {
     <>
       <Header />
       <div className="grid">
-        <FileImporter
-          _handleSelectFile={handleSelectFile}
-          selectedFile={selectedFile}
-        />
-        <FileUploader />
+        <FileImporter selectedFile={selectedFile} />
+        <FileUploader _handleSelectFile={handleSelectFile} />
         <div className="footerButtonWrapper">
           <button
             //   disabled={!selectedFile}
