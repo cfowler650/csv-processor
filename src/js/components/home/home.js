@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./home.css";
 import icon from "../images/google-docs.svg";
 import cloudImage from "../images/cloudimage.png";
+import { useToasts } from "react-toast-notifications";
 
 const Header = () => {
   return (
@@ -47,9 +48,12 @@ const FileUploader = () => {
 const Home = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFilePath, setSelectedFilePath] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { addToast } = useToasts();
 
   const handleSelectFile = async (e) => {
     e.preventDefault();
+
     const response = await electron.fileApi.uploadFile();
     const { filePaths } = response;
     const [path] = filePaths;
@@ -64,7 +68,16 @@ const Home = () => {
 
   const handleSaveFile = async (e) => {
     e.preventDefault();
-    const res = await electron.fileApi.saveFile(selectedFilePath);
+
+    const res = await electron.fileApi.saveFile(selectedFilePath, setIsLoading);
+
+    const { error } = res;
+
+    if (error) {
+      addToast(error, { appearance: "error" });
+    } else {
+      addToast("Saved Successfully", { appearance: "success" });
+    }
   };
 
   return (
@@ -80,7 +93,7 @@ const Home = () => {
           <button
             //   disabled={!selectedFile}
             onClick={handleSaveFile}
-            className="btn"
+            className={`btn ${isLoading && "button is-loading"}`}
           >
             Run
           </button>

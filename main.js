@@ -56,18 +56,23 @@ ipcMain.handle("processFile", (_, inFilePath, outFile) => {
     ],
   });
 
-  const results = [];
-
-  fs.createReadStream(inFilePath)
-    .pipe(csv())
-    .on("data", (row) => {
-      results.push({ ...row, value: row.value * 2 });
-    })
-    .on("end", () => {
-      csvWriter.writeRecords(results).then(() => {
-        console.log("The CSV file was written successfully");
+  return new Promise((resolve, reject) => {
+    const results = [];
+    fs.createReadStream(inFilePath)
+      .on("error", () => {
+        reject({ error: "error stuff" });
+      })
+      .pipe(csv())
+      .on("data", (row) => {
+        results.push({ ...row, value: row.value * 2 });
+      })
+      .on("end", () => {
+        csvWriter.writeRecords(results).then(() => {
+          console.log("The CSV file was written successfully");
+          resolve(true);
+        });
       });
-    });
+  });
 });
 
 app.whenReady().then(createWindow);

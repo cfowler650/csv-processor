@@ -11,13 +11,23 @@ contextBridge.exposeInMainWorld("electron", {
       const filePath = await ipcRenderer.invoke("uploadFile");
       return filePath;
     },
-    async saveFile(inFile) {
+
+    async saveFile(inFile, _setIsloading) {
       const outFile = await ipcRenderer.invoke("saveFile");
-      const processFile = await ipcRenderer.invoke(
-        "processFile",
-        inFile,
-        outFile
-      );
+      _setIsloading(true);
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      return ipcRenderer
+        .invoke("processFile", inFile, outFile)
+        .then((res) => {
+          _setIsloading(false);
+          return true;
+        })
+        .catch((err) => {
+          _setIsloading(false);
+          return { error: "there was an error" };
+        });
     },
   },
 });
