@@ -6,76 +6,67 @@
   color: #eee;
 }
 
-.homeContainer {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  margin: 0 40px;
-}
-.fileUploaderWrapper {
-  width: 100%;
+.fileImporter {
+  margin-bottom: 20px;
 }
 
-.urlWrapper {
-  display: flex;
-  flex-direction: column;
-  margin: 10px 0px;
-}
-
-.filePathInput::placeholder {
-  color: lightgray;
-}
-.imgWrapper {
-  width: 100%;
-  height: 200px;
-  margin: 20px 0px;
-  border: 2px dashed #eee;
-  padding: 20px;
-  background: #4f74c1;
-  border-radius: 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.imgWrapper > img {
-  filter: invert(1);
-  width: 100px;
-}
-.topDescription {
+.instructions {
   margin-top: 20px;
   font-size: 14px;
 }
-.selectFileContainer {
-  width: 100%;
-  margin-top: 20px;
+
+.selected {
+  padding: 5px 40px;
 }
-.dragDropSection {
+
+.selectedFile {
+  margin-top: 15px;
+  position: relative;
+}
+
+.selectedFileIcon {
+  top: 0;
+  position: absolute;
+}
+
+.fileUploader {
   display: flex;
   justify-content: center;
 }
 
+.cloudImgContainer {
+  max-width: 100px;
+  padding: 40px;
+  border: 2px dashed #eee;
+  background: #4f74c1;
+  border-radius: 6px;
+}
+
+.cloudImgContainer > img {
+  filter: invert(1);
+}
+
+.grid {
+  padding: 0px 40px;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 3fr 3fr 3fr;
+}
+
+.footerButtonWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
 .btn {
+  width: 100%;
   padding: 10px;
   background: #052871;
   border: none;
   border-radius: 6px;
   text-transform: uppercase;
   color: #eee;
-}
-
-.runBtn {
-  position: absolute;
-  top: 400px;
-  width: 100%;
-  margin: 40px;
-}
-
-.importBtn {
-  width: 100%;
 }
 
 .btn:hover {

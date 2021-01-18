@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import "./home.css";
 import icon from "../images/google-docs.svg";
 import cloudImage from "../images/cloudimage.png";
@@ -12,22 +11,23 @@ const Header = () => {
   );
 };
 
-const getFilePath = async () => {
-  console.log("fired");
-  const res = await electron.fileApi.uploadFile();
-  return res;
-};
-
 const FileImporter = ({ _handleSelectFile, selectedFile }) => {
   return (
-    <div className="selectFileContainer">
-      {selectedFile && (
-        <div>
-          <img src={icon} />
-          {selectedFile}
+    <div>
+      {/*TODO: change styles here so button doesnt jump */}
+      <div className="fileImporter">
+        <div className="instructions">
+          Select file or drag and drop to upload a CSV file. You can import one
+          csv file at a time.
         </div>
-      )}
-      <button onClick={_handleSelectFile} className="btn importBtn">
+        {selectedFile && (
+          <div className="selectedFile">
+            <img className="selectedFileIcon" src={icon} />
+            <div className="selected">{selectedFile}</div>
+          </div>
+        )}
+      </div>
+      <button className="btn" onClick={_handleSelectFile}>
         Select File
       </button>
     </div>
@@ -36,11 +36,9 @@ const FileImporter = ({ _handleSelectFile, selectedFile }) => {
 
 const FileUploader = () => {
   return (
-    <div className="fileUploaderWrapper">
-      <div className="dragDropSection">
-        <div className="imgWrapper">
-          <img src={cloudImage} width="100%" />
-        </div>
+    <div className="fileUploader">
+      <div className="cloudImgContainer">
+        <img src={cloudImage} width="100%" />
       </div>
     </div>
   );
@@ -49,15 +47,16 @@ const FileUploader = () => {
 const Home = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFilePath, setSelectedFilePath] = useState(null);
+
   const handleSelectFile = async (e) => {
     e.preventDefault();
-    const response = await getFilePath();
+    const response = await electron.fileApi.uploadFile();
     const { filePaths } = response;
-    const [firstPath] = filePaths;
-    setSelectedFilePath(firstPath);
-    const pathArray = firstPath?.split("/");
-    const fileName = pathArray[pathArray.length - 1];
+    const [path] = filePaths;
+    setSelectedFilePath(path);
 
+    const pathArray = path?.split("/");
+    const fileName = pathArray[pathArray.length - 1];
     if (response !== undefined) {
       setSelectedFile(fileName);
     }
@@ -71,23 +70,21 @@ const Home = () => {
   return (
     <>
       <Header />
-      <div className="homeContainer">
-        <div className="topDescription">
-          Select file or drag and drop to upload a CSV file. You can import one
-          csv file at a time.
-        </div>
+      <div className="grid">
         <FileImporter
           _handleSelectFile={handleSelectFile}
           selectedFile={selectedFile}
         />
         <FileUploader />
-        <button
-          //   disabled={!selectedFile}
-          onClick={handleSaveFile}
-          className="btn runBtn"
-        >
-          Run
-        </button>
+        <div className="footerButtonWrapper">
+          <button
+            //   disabled={!selectedFile}
+            onClick={handleSaveFile}
+            className="btn"
+          >
+            Run
+          </button>
+        </div>
       </div>
     </>
   );
