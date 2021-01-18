@@ -10,7 +10,7 @@ let indexPath = "index.html";
 function createWindow() {
   win = new BrowserWindow({
     width: 400,
-    height: 646,
+    height: 546,
     show: false,
     backgroundColor: "white",
     webPreferences: {
@@ -19,7 +19,7 @@ function createWindow() {
       contextIsolation: true,
       preload: path.join(__dirname, "preload.js"),
     },
-    resizable: true,
+    resizable: false,
   });
 
   win.loadFile(indexPath);
