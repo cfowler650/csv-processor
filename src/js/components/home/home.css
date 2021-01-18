@@ -45,12 +45,16 @@
   width: 100%;
   padding: 0 40px;
   border: 2px dashed #eee;
-  background: #4f74c1;
+  background: rgba(79, 116, 193);
   border-radius: 6px;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   height: 200px;
+}
+
+.fileUploaderDrag {
+  background: rgb(106, 147, 236);
 }
 
 .cloudImgContainer {
@@ -80,7 +84,7 @@
   padding: 0px 40px;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 0.2fr 0.4fr 0.9fr;
+  grid-template-rows: 0.4fr 0.4fr 0.7fr;
 }
 
 .footerButtonWrapper {
@@ -105,5 +109,5 @@
 }
 
 .btn:disabled {
-  background: lightgray;
+  background: rgb(224, 224, 224);
 }

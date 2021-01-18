@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./home.css";
 import icon from "../images/google-docs.svg";
 import cloudImage from "../images/cloudimage.svg";
@@ -36,21 +36,64 @@ const FileImporter = ({ selectedFile }) => {
 };
 
 const FileUploader = ({ _handleSelectFile }) => {
+  const [dragOver, setDragOver] = useState(null);
+  useEffect(() => {
+    const el = document.querySelector(".fileUploader");
+    el.ondragover = () => {
+      setDragOver(true);
+      return false;
+    };
+    el.ondragleave = () => {
+      setDragOver(false);
+      return false;
+    };
+    el.ondragend = () => {
+      return false;
+    };
+    // el.ondrop = () => {
+    //   // e.preventDefault();
+    //   setDragOver(false);
+    //   console.log("draggeeddrop");
+
+    //   let dragAndDropPath = "";
+    //   for (let f of e.dataTransfer.files) {
+    //     dragAndDropPath = f.path;
+    //   }
+
+    //   _handleSelectFile(dragAndDropPath);
+
+    //   // return false;
+    // };
+
+    el.ondrop = (e) => {
+      e?.preventDefault();
+      setDragOver(false);
+      let dragAndDropPath = e?.dataTransfer?.files[0]?.path;
+      _handleSelectFile(dragAndDropPath);
+      return false;
+    };
+  }, []);
+  console.log(dragOver);
   return (
     <>
       <div className="fileUploader">
-        <div className="fileUploaderContainer">
+        <div
+          className={`fileUploaderContainer ${dragOver && "fileUploaderDrag"}`}
+        >
           <div className="cloud">
             <div className="cloudImgContainer">
               <img className="cloudImg" src={cloudImage} width="100%" />
             </div>
           </div>
+
           <div className="dragDropText">
             <span>Drag & Drop files here</span>
           </div>
+
           <div className="orText">
             <span>or</span>
           </div>
+
           <div className="buttonContainer">
             <button className="btn" onClick={_handleSelectFile}>
               Select File
@@ -68,18 +111,27 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { addToast } = useToasts();
 
-  const handleSelectFile = async (e) => {
-    e.preventDefault();
+  const handleSelectFile = async (dragAndDropPath) => {
+    if (typeof dragAndDropPath === typeof "string") {
+      setSelectedFilePath(dragAndDropPath);
+      console.log(dragAndDropPath, "draganddropat");
+      const pathArray = dragAndDropPath?.split("/");
+      const fileName = pathArray[pathArray.length - 1];
+      if (fileName) {
+        setSelectedFile(fileName);
+      }
+    }
 
-    const response = await electron.fileApi.uploadFile();
-    const { filePaths } = response;
-    const [path] = filePaths;
-    setSelectedFilePath(path);
-
-    const pathArray = path?.split("/");
-    const fileName = pathArray[pathArray.length - 1];
-    if (response !== undefined) {
-      setSelectedFile(fileName);
+    if (typeof dragAndDropPath !== typeof "string") {
+      const response = await electron.fileApi.uploadFile();
+      const { filePaths } = response;
+      const [path] = filePaths;
+      setSelectedFilePath(path);
+      const pathArray = path?.split("/");
+      const fileName = pathArray[pathArray.length - 1];
+      if (response !== undefined) {
+        setSelectedFile(fileName);
+      }
     }
   };
 
@@ -105,7 +157,7 @@ const Home = () => {
         <FileUploader _handleSelectFile={handleSelectFile} />
         <div className="footerButtonWrapper">
           <button
-            //   disabled={!selectedFile}
+            disabled={!selectedFile}
             onClick={handleSaveFile}
             className={`btn ${isLoading && "button is-loading"}`}
           >
