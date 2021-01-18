@@ -17,7 +17,8 @@
     "electron": "^11.2.0",
     "file-loader": "^6.2.0",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-toast-notifications": "^2.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
