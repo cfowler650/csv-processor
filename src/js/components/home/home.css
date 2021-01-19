@@ -109,5 +109,7 @@
 }
 
 .btn:disabled {
+  color: darkgrey;
+  cursor: not-allowed;
   background: rgb(224, 224, 224);
 }
