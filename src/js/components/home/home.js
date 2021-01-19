@@ -139,13 +139,14 @@ const Home = () => {
     e.preventDefault();
 
     const res = await electron.fileApi.saveFile(selectedFilePath, setIsLoading);
-
+    console.log(res, "res");
     const { error } = res;
 
     if (error) {
       addToast(error, { appearance: "error" });
     } else {
       addToast("Saved Successfully", { appearance: "success" });
+      setSelectedFile(null);
     }
   };
 
