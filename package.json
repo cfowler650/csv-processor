@@ -2,6 +2,7 @@
   "name": "electron-default",
   "version": "1.0.0",
   "description": "",
+  "productName": "css-processor",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -26,6 +27,7 @@
     "@babel/preset-react": "^7.12.10",
     "babel-loader": "^8.2.2",
     "css-loader": "^5.0.1",
+    "electron-packager": "^15.2.0",
     "sass": "^1.32.4",
     "sass-loader": "^10.1.1",
     "style-loader": "^2.0.0",

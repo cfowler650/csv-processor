@@ -14,20 +14,26 @@ contextBridge.exposeInMainWorld("electron", {
 
     async saveFile(inFile, _setIsloading) {
       const outFile = await ipcRenderer.invoke("saveFile");
-      _setIsloading(true);
+      const { canceled } = outFile;
+      if (canceled) {
+        return { error: "file selection canceled" };
+      }
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!canceled) {
+        _setIsloading(true);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      return ipcRenderer
-        .invoke("processFile", inFile, outFile)
-        .then((res) => {
-          _setIsloading(false);
-          return true;
-        })
-        .catch((err) => {
-          _setIsloading(false);
-          return { error: "there was an error" };
-        });
+        return ipcRenderer
+          .invoke("processFile", inFile, outFile)
+          .then((res) => {
+            _setIsloading(false);
+            return true;
+          })
+          .catch((err) => {
+            _setIsloading(false);
+            return { error: "there was an error" };
+          });
+      }
     },
   },
 });
