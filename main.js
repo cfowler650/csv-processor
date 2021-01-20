@@ -64,7 +64,7 @@ ipcMain.handle(
     //this gets called by watcher.add function
     var processCSVFromWatcher = (pathToBeChangedIntoFileName) => {
       processCSVFile(_, pathToBeChangedIntoFileName, preloadOUTPUTPATH)
-        .then((res) => win.webContents.send("fileAdd", "fileAdded"))
+        .then((res) => win.webContents.send("fileAdd", "ky"))
         .catch((err) => console.log("PROCESSFILENOW", err));
     };
 

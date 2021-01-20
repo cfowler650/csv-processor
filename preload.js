@@ -9,12 +9,12 @@ contextBridge.exposeInMainWorld("electron", {
   mainListenerApi: {
     async addFileEvent(addToastCB) {
       ipcRenderer.on("fileAdd", (event, filename) => {
-        addToastCB("New CSV file detected, converting file....", {
+        addToastCB("New CSV file detected, processing file...", {
           appearance: "success",
         });
         const test = new Promise((resolve) => setTimeout(resolve, 2000));
         test.then(() => {
-          addToastCB("CSV File Converted Succesfully", {
+          addToastCB("CSV File processed successfully!", {
             appearance: "success",
           });
         });
