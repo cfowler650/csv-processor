@@ -233,8 +233,8 @@ const Home = () => {
 
   const handleWatcher = async (e) => {
     e.preventDefault();
-    const watcherInputPath = "/Users/caleb/Desktop/inputFiles";
-    const watcherOutputPath = "/Users/caleb/Desktop/outputFiles";
+    // const watcherInputPath = "/Users/caleb/Desktop/inputFiles";
+    // const watcherOutputPath = "/Users/caleb/Desktop/outputFiles";
     const res = await electron.fileApi.startWatcher(
       watcherInputPath,
       watcherOutputPath
