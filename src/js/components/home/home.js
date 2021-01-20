@@ -124,19 +124,10 @@ const Modal = ({
   return (
     <div className={`modal ${_modalState && "show"}`}>
       <div className="modal-form-input">
-        <div>Input Path:</div>
+        <div className="inputLabel">Input Path</div>
 
         {_watcherInputPath ? (
-          <div
-            style={{
-              background: "rgba(106, 147, 236, 0.8)",
-              fontSize: 12,
-              padding: 10,
-              margin: "10px 0px",
-            }}
-          >
-            {_watcherInputPath}
-          </div>
+          <div className="pathInput">{_watcherInputPath}</div>
         ) : (
           <button
             onClick={handleFormInput}
@@ -149,18 +140,9 @@ const Modal = ({
       </div>
 
       <div className="modal-form-input">
-        <div>Output Path:</div>
+        <div className="inputLabel">Output Path</div>
         {_watcherOutputPath ? (
-          <div
-            style={{
-              background: "rgba(106, 147, 236, 0.8)",
-              fontSize: 12,
-              padding: 10,
-              margin: "10px 0px",
-            }}
-          >
-            {_watcherOutputPath}
-          </div>
+          <div className="pathInput">{_watcherOutputPath}</div>
         ) : (
           <button
             onClick={handleFormInput}
@@ -244,8 +226,6 @@ const Home = () => {
 
     const { error } = res;
 
-    console.log(error, "error");
-    console.log(res, "res");
     if (error) {
       addToast(`ERROR: ${error}`, { appearance: "error" });
       //reset inputs if they are same, so person can reselect
@@ -296,14 +276,6 @@ const Home = () => {
           >
             Run
           </button>
-          {/* <button
-            onClick={handleWatcher}
-            className={`btn ${isLoading && "button is-loading"}`}
-          >
-            Start Watcher
-          </button> */}
-          {/* when you highlight button the middle swaps out for word of button on mouse enter and leave */}
-
           <Modal
             _selectWatcherDirectory={selectWatcherDirectory}
             _watcherInputPath={watcherInputPath || ""}

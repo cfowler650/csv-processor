@@ -64,7 +64,7 @@ ipcMain.handle(
     //this gets called by watcher.add function
     var processCSVFromWatcher = (pathToBeChangedIntoFileName) => {
       processCSVFile(_, pathToBeChangedIntoFileName, preloadOUTPUTPATH)
-        .then((res) => console.log(res))
+        .then((res) => console.log("file added"))
         .catch((err) => console.log("PROCESSFILENOW", err));
     };
 
@@ -76,7 +76,7 @@ ipcMain.handle(
       });
 
       function onWatcherReady() {
-        console.info("from here check realchange, initai scan completed");
+        console.info("watcher is now ready");
       }
 
       watcher
