@@ -10,6 +10,7 @@ const chokidar = require("chokidar");
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
+const { getProcessMemoryInfo } = require("process");
 
 let win;
 let indexPath = "index.html";
@@ -60,10 +61,17 @@ ipcMain.handle("selectWatcherDirectory", async () => {
 ipcMain.handle(
   "startWatcher",
   async (_, folderToBeWatched, folderToBeSaved) => {
-    function startWatcher(paths) {
+    //this gets called by watcher.add function
+    var processStuff = (filename) => {
+      processFileNow(_, filename, folderToBeSaved)
+        .then((res) => console.log(res))
+        .catch((err) => console.log("BIG ERROR", err));
+    };
+
+    function startWatcher(path) {
       //pass folderToBeWatched, and FolderToBeSaved to add
       //says that watch takes arrays too? confused
-      const path = ["/", "/home"];
+      // const path = ["/", "/home"];
       const watcher = chokidar.watch(path, {
         ignored: /[\/\\]\./,
         persistent: true,
@@ -76,8 +84,7 @@ ipcMain.handle(
 
       watcher
         .on("add", function (path) {
-          console.log(path, "path");
-          // processFileNow(_, folderToBeWatched, folderToBeSaved);
+          processStuff(path);
         })
         .on("addDir", function (path) {
           console.log("Directory", path, "has been added");
@@ -102,9 +109,7 @@ ipcMain.handle(
     }
 
     if (folderToBeWatched) {
-      console.log("starting watcher with", folderToBeSaved);
-      const path = folderToBeWatched + "^" + folderToBeSaved;
-      startWatcher(path);
+      startWatcher(folderToBeWatched);
     } else {
       console.log("No path selected");
     }
@@ -112,8 +117,10 @@ ipcMain.handle(
 );
 
 const processFileNow = async (_, inFilePath, outFile) => {
-  const outFilePath = outFile.filePath || outFile;
+  console.log("infilePath", inFilePath, "outfilepath", outFile);
+  const outFilePath = outFile.filePath || `${outFile}/whatever.csv`;
 
+  console.log({ outFilePath });
   const csvWriter = createCsvWriter({
     path: outFilePath,
     header: [
@@ -124,9 +131,10 @@ const processFileNow = async (_, inFilePath, outFile) => {
 
   return new Promise((resolve, reject) => {
     const results = [];
+    console.log(inFilePath, "infilePath");
     fs.createReadStream(inFilePath)
-      .on("error", () => {
-        reject({ error: "error stuff" });
+      .on("error", (e) => {
+        reject({ error: e });
       })
       .pipe(csv())
       .on("data", (row) => {
