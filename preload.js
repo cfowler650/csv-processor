@@ -19,14 +19,19 @@ contextBridge.exposeInMainWorld("electron", {
     },
 
     async startWatcher(folderToWatch, folderToSave) {
-      console.log(typeof inPath);
-      const results = await ipcRenderer.invoke(
-        "startWatcher",
-        folderToWatch,
-        folderToSave
-      );
+      if (!folderToWatch === !folderToSave)
+        return { error: "input and output folders can't be the same." };
+      if (!folderToWatch) return { error: "please select an input" };
+      if (!folderToSave) return { error: "please select an output" };
 
-      // return results;
+      return ipcRenderer
+        .invoke("startWatcher", folderToWatch, folderToSave)
+        .then((res) => {
+          return true;
+        })
+        .catch((err) => {
+          return { error: "there was an error" };
+        });
     },
 
     async saveFile(inFile, _setIsloading) {

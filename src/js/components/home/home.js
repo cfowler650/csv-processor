@@ -239,6 +239,22 @@ const Home = () => {
       watcherInputPath,
       watcherOutputPath
     );
+
+    const { error } = res;
+
+    console.log(error, "error");
+    console.log(res, "res");
+    if (error) {
+      addToast(`ERROR: ${error}`, { appearance: "error" });
+      //reset inputs if they are same, so person can reselect
+      if (watcherInputPath && watcherOutputPath) {
+        setWatcherInputPath(null);
+        setWatcherOutputPath(null);
+      }
+    } else {
+      addToast("Watcher Created", { appearance: "success" });
+      // setSelectedFile(null);
+    }
   };
 
   const displayWatcherSettings = (e) => {

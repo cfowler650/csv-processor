@@ -60,18 +60,15 @@ ipcMain.handle("selectWatcherDirectory", async () => {
 
 ipcMain.handle(
   "startWatcher",
-  async (_, folderToBeWatched, folderToBeSaved) => {
+  async (_, preloadWATCHPATH, preloadOUTPUTPATH) => {
     //this gets called by watcher.add function
-    var processStuff = (filename) => {
-      processFileNow(_, filename, folderToBeSaved)
+    var processCSVFromWatcher = (pathToBeChangedIntoFileName) => {
+      processCSVFile(_, pathToBeChangedIntoFileName, preloadOUTPUTPATH)
         .then((res) => console.log(res))
-        .catch((err) => console.log("BIG ERROR", err));
+        .catch((err) => console.log("PROCESSFILENOW", err));
     };
 
     function startWatcher(path) {
-      //pass folderToBeWatched, and FolderToBeSaved to add
-      //says that watch takes arrays too? confused
-      // const path = ["/", "/home"];
       const watcher = chokidar.watch(path, {
         ignored: /[\/\\]\./,
         persistent: true,
@@ -84,19 +81,7 @@ ipcMain.handle(
 
       watcher
         .on("add", function (path) {
-          processStuff(path);
-        })
-        .on("addDir", function (path) {
-          console.log("Directory", path, "has been added");
-        })
-        .on("change", function (path) {
-          console.log("File", path, "has been changed");
-        })
-        .on("unlink", function (path) {
-          console.log("File", path, "has been removed");
-        })
-        .on("unlinkDir", function (path) {
-          console.log("Directory", path, "has been removed");
+          processCSVFromWatcher(path);
         })
         .on("error", function (error) {
           console.log("Error happened", error);
@@ -108,35 +93,41 @@ ipcMain.handle(
         });
     }
 
-    if (folderToBeWatched) {
-      startWatcher(folderToBeWatched);
+    if (preloadWATCHPATH) {
+      startWatcher(preloadWATCHPATH);
     } else {
-      console.log("No path selected");
+      return { error: "no input path selected" };
     }
   }
 );
 
-const processFileNow = async (_, inFilePath, outFile) => {
-  console.log("infilePath", inFilePath, "outfilepath", outFile);
+const processCSVFile = async (_, inFilePath, preloadOUTPUTPATH) => {
+  //finalOutputPath  should be a final path with desired processed csv name appended
+  //finalOutputPath variable is passed to createCSVWrtier function
+  //i.e. "/desktop/processedFileName.csv"
+  let finalOutputPath;
 
-  let outFilePath;
-  const outFileToPass = outFile.filePath || outFile;
-  if (!outFileToPass.includes(".csv")) {
-    console.log(outFileToPass, "if block");
-    const arr = outFileToPass.split("/");
+  //here we find out if preloadOUTPUTPATH is coming from someone creating a watcher or not..
+  const currentPath = preloadOUTPUTPATH.filePath || preloadOUTPUTPATH;
+
+  //if the path does not include .csv at the end,
+  //then it is coming from someone creating a watcher and we need to append a file name to it
+  //ELSE: we just assign the original preloadOUTPUTPATH to currentPath.
+  if (!currentPath.includes(".csv")) {
+    const arr = currentPath.split("/");
     const randomFileName =
       "/" +
       (arr[arr.length - 1] + Math.floor(Math.random() * 100) + 1) +
       ".csv";
-    outFilePath = outFileToPass + randomFileName;
-    console.log(outFilePath, "outafter");
+    finalOutputPath = currentPath + randomFileName;
+    console.log(finalOutputPath);
   } else {
-    outFilePath = outFileToPass;
+    finalOutputPath = currentPath;
   }
 
-  console.log({ outFilePath });
+  //we pass path which should look like "/desktop/nameOfOutputFile.csv"
   const csvWriter = createCsvWriter({
-    path: outFilePath,
+    path: finalOutputPath,
     header: [
       { id: "name", title: "Name" },
       { id: "value", title: "Value" },
@@ -145,10 +136,9 @@ const processFileNow = async (_, inFilePath, outFile) => {
 
   return new Promise((resolve, reject) => {
     const results = [];
-    console.log(inFilePath, "infilePath");
     fs.createReadStream(inFilePath)
       .on("error", (e) => {
-        reject({ error: e });
+        reject({ message: "error creating read stream", error: e });
       })
       .pipe(csv())
       .on("data", (row) => {
@@ -163,6 +153,6 @@ const processFileNow = async (_, inFilePath, outFile) => {
   });
 };
 
-ipcMain.handle("processFile", processFileNow);
+ipcMain.handle("processFile", processCSVFile);
 
 app.whenReady().then(createWindow);
