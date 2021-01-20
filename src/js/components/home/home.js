@@ -256,6 +256,8 @@ const Home = () => {
     } else {
       addToast("Watcher Created", { appearance: "success" });
       setOpenModal(false);
+      setWatcherInputPath(null);
+      setWatcherOutputPath(null);
     }
   };
 
