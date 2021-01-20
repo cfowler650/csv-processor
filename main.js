@@ -50,7 +50,7 @@ ipcMain.handle("selectWatcherDirectory", async () => {
   });
   return filePaths;
 });
-ipcMain.handle("startWatcher", async () => {
+ipcMain.handle("startWatcher", async (_, filePath) => {
   function startWatcher(path) {
     const watcher = chokidar.watch(path, {
       ignored: /[\/\\]\./,
@@ -88,23 +88,18 @@ ipcMain.handle("startWatcher", async () => {
   }
 
   //opens select direction for tracker dialogue
-  const { filePaths } = await dialog.showOpenDialog({
-    properties: ["openDirectory"],
-  });
+  // const { filePaths } = await dialog.showOpenDialog({
+  //   properties: ["openDirectory"],
+  // });
 
   //if file paths array exists grab first one
-  if (filePaths) {
-    console.log("starting watcher with", filePaths[0]);
-    startWatcher(filePaths[0]);
+
+  if (filePath) {
+    console.log("starting watcher with", filePath);
+    startWatcher(filePath);
   } else {
     console.log("No path selected");
   }
-  // if (path) {
-  //   // Start to watch the selected path
-  //   startWatcher(path[0]);
-  // } else {
-  //   console.log("No path selected");
-  // }
 
   // return function test(path) {
   //   if (path) {

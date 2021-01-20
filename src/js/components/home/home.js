@@ -180,7 +180,7 @@ const Modal = ({
       <div>
         <button
           onClick={_createWatcher}
-          className="modal-form-button createWatcherBrn"
+          className="modal-form-button createWatcherBtn"
         >
           Create A Watcher
         </button>
@@ -240,9 +240,10 @@ const Home = () => {
 
   const handleWatcher = async (e) => {
     e.preventDefault();
-    const res = await electron.fileApi.startWatcher();
-
-    console.log(res);
+    // console.log(watcherInputPath, " watcherInputPath");
+    const watcherInputPath = "/Users/caleb/Desktop/jointsong";
+    const res = await electron.fileApi.startWatcher(watcherInputPath);
+    console.log(res, " resposne");
   };
 
   const displayWatcherSettings = (e) => {
@@ -293,6 +294,7 @@ const Home = () => {
               _selectWatcherDirectory={selectWatcherDirectory}
               _watcherInputPath={watcherInputPath || ""}
               _watcherOutputPath={watcherOutputPath || ""}
+              _createWatcher={handleWatcher}
             />
           )}
           <button

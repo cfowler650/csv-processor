@@ -18,6 +18,13 @@ contextBridge.exposeInMainWorld("electron", {
       return results;
     },
 
+    async startWatcher(inPath) {
+      console.log(typeof inPath);
+      const results = await ipcRenderer.invoke("startWatcher", inPath);
+
+      // return results;
+    },
+
     async saveFile(inFile, _setIsloading) {
       const outFile = await ipcRenderer.invoke("saveFile");
       const { canceled } = outFile;
