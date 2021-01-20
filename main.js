@@ -26,7 +26,7 @@ function createWindow() {
       contextIsolation: true,
       preload: path.join(__dirname, "preload.js"),
     },
-    resizable: true,
+    resizable: false,
   });
 
   win.loadFile(indexPath);

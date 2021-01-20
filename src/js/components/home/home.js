@@ -3,6 +3,7 @@ import "./home.css";
 import icon from "../images/google-docs.svg";
 import cloudImage from "../images/cloudimage.svg";
 import logo from "../images/logo.png";
+import gear from "../images/cogs-solid.svg";
 import { useToasts } from "react-toast-notifications";
 
 const Header = () => {
@@ -109,6 +110,7 @@ const Modal = ({
   _watcherInputPath,
   _watcherOutputPath,
   _createWatcher,
+  _modalState,
 }) => {
   console.log(_watcherInputPath);
   console.log(_watcherOutputPath, "watcherouput");
@@ -120,7 +122,7 @@ const Modal = ({
   };
 
   return (
-    <div className={"modal"}>
+    <div className={`modal ${_modalState && "show"}`}>
       <div className="modal-form-input">
         <div>Input Path:</div>
 
@@ -300,20 +302,17 @@ const Home = () => {
           </button> */}
           {/* when you highlight button the middle swaps out for word of button on mouse enter and leave */}
 
-          {openModal && (
-            <Modal
-              _selectWatcherDirectory={selectWatcherDirectory}
-              _watcherInputPath={watcherInputPath || ""}
-              _watcherOutputPath={watcherOutputPath || ""}
-              _createWatcher={handleWatcher}
-            />
-          )}
-          <button
-            onClick={displayWatcherSettings}
-            className={`btn ${isLoading && "button is-loading"}`}
-          >
-            Open Watcher Settings
-          </button>
+          <Modal
+            _selectWatcherDirectory={selectWatcherDirectory}
+            _watcherInputPath={watcherInputPath || ""}
+            _watcherOutputPath={watcherOutputPath || ""}
+            _createWatcher={handleWatcher}
+            _modalState={openModal}
+          />
+
+          <div onClick={displayWatcherSettings} className="gearIcon">
+            <img src={gear} width="100%" />
+          </div>
         </div>
       </div>
     </>
