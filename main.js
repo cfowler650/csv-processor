@@ -118,7 +118,21 @@ ipcMain.handle(
 
 const processFileNow = async (_, inFilePath, outFile) => {
   console.log("infilePath", inFilePath, "outfilepath", outFile);
-  const outFilePath = outFile.filePath || `${outFile}/whatever.csv`;
+
+  let outFilePath;
+  const outFileToPass = outFile.filePath || outFile;
+  if (!outFileToPass.includes(".csv")) {
+    console.log(outFileToPass, "if block");
+    const arr = outFileToPass.split("/");
+    const randomFileName =
+      "/" +
+      (arr[arr.length - 1] + Math.floor(Math.random() * 100) + 1) +
+      ".csv";
+    outFilePath = outFileToPass + randomFileName;
+    console.log(outFilePath, "outafter");
+  } else {
+    outFilePath = outFileToPass;
+  }
 
   console.log({ outFilePath });
   const csvWriter = createCsvWriter({
