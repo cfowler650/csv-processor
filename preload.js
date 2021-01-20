@@ -6,6 +6,21 @@ contextBridge.exposeInMainWorld("electron", {
       ipcRenderer.send("notify", message);
     },
   },
+  mainListenerApi: {
+    async addFileEvent(addToastCB) {
+      ipcRenderer.on("fileAdd", (event, filename) => {
+        addToastCB("New CSV file detected, converting file....", {
+          appearance: "success",
+        });
+        const test = new Promise((resolve) => setTimeout(resolve, 2000));
+        test.then(() => {
+          addToastCB("CSV File Converted Succesfully", {
+            appearance: "success",
+          });
+        });
+      });
+    },
+  },
   fileApi: {
     async uploadFile() {
       const filePath = await ipcRenderer.invoke("uploadFile");
