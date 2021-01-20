@@ -12,7 +12,7 @@ contextBridge.exposeInMainWorld("electron", {
       return filePath;
     },
 
-    async startWatcher() {
+    async selectWatcherDirectory() {
       const results = await ipcRenderer.invoke("selectWatcherDirectory");
       console.log(results);
       return results;
