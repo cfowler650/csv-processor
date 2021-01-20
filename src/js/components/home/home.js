@@ -117,7 +117,7 @@ const Modal = ({
   const handleFormInput = async (e) => {
     e.preventDefault();
     const selected = e?.target.name;
-    console.log(selected);
+
     _selectWatcherDirectory(selected);
   };
 
@@ -176,10 +176,14 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { addToast } = useToasts();
 
+  useEffect(() => {
+    let listener = electron.mainListenerApi.addFileEvent(addToast);
+  }, []);
+
   const handleSelectFile = async (dragAndDropPath) => {
     if (typeof dragAndDropPath === typeof "string") {
       setSelectedFilePath(dragAndDropPath);
-      console.log(dragAndDropPath, "draganddropat");
+
       const pathArray = dragAndDropPath?.split("/");
       const fileName = pathArray[pathArray.length - 1];
       if (fileName) {
@@ -204,7 +208,7 @@ const Home = () => {
     e.preventDefault();
 
     const res = await electron.fileApi.saveFile(selectedFilePath, setIsLoading);
-    console.log(res, "res");
+
     const { error } = res;
 
     if (error) {
@@ -224,6 +228,7 @@ const Home = () => {
       watcherOutputPath
     );
 
+    console.log(res);
     const { error } = res;
 
     if (error) {
