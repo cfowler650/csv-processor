@@ -104,17 +104,19 @@ const FileUploader = ({ _handleSelectFile }) => {
   );
 };
 
-const Modal = ({ _selectWatcherDirectory, _watcherInputPath }) => {
+const Modal = ({
+  _selectWatcherDirectory,
+  _watcherInputPath,
+  _watcherOutputPath,
+  _createWatcher,
+}) => {
   console.log(_watcherInputPath);
+  console.log(_watcherOutputPath, "watcherouput");
   const handleFormInput = async (e) => {
-    let selected = e.target.name;
-
-    if (selected === "input") {
-      _selectWatcherDirectory();
-    }
-    if (selected === "output") {
-      // selectOuputDirectory();
-    }
+    e.preventDefault();
+    const selected = e?.target.name;
+    console.log(selected);
+    _selectWatcherDirectory(selected);
   };
 
   return (
@@ -143,15 +145,29 @@ const Modal = ({ _selectWatcherDirectory, _watcherInputPath }) => {
           </button>
         )}
       </div>
+
       <div className="modal-form-input">
         <div>Output Path:</div>
-        <button
-          name="output"
-          onClick={handleFormInput}
-          className="modal-form-button"
-        >
-          Select
-        </button>
+        {_watcherOutputPath ? (
+          <div
+            style={{
+              background: "rgba(106, 147, 236, 0.8)",
+              fontSize: 12,
+              padding: 10,
+              margin: "10px 0px",
+            }}
+          >
+            {_watcherOutputPath}
+          </div>
+        ) : (
+          <button
+            onClick={handleFormInput}
+            name="output"
+            className="modal-form-button"
+          >
+            Select
+          </button>
+        )}
       </div>
       <div className="modal-form-input">
         <div>Check Folder Interval:</div>
@@ -163,12 +179,7 @@ const Modal = ({ _selectWatcherDirectory, _watcherInputPath }) => {
       </div>
       <div>
         <button
-          style={{
-            position: "absolute",
-            top: "80%",
-            left: "50%",
-            tranform: "translate(-50%, -50%)",
-          }}
+          onClick={_createWatcher}
           className="modal-form-button createWatcherBrn"
         >
           Create A Watcher
@@ -182,6 +193,8 @@ const Home = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFilePath, setSelectedFilePath] = useState(null);
   const [watcherInputPath, setWatcherInputPath] = useState(null);
+  const [watcherOutputPath, setWatcherOutputPath] = useState(null);
+
   const [openModal, setOpenModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { addToast } = useToasts();
@@ -238,10 +251,18 @@ const Home = () => {
     setOpenModal(!openModal);
   };
 
-  const selectWatcherDirectory = async () => {
+  const selectWatcherDirectory = async (caller) => {
+    console.log(caller);
     const res = await electron.fileApi.selectWatcherDirectory();
     const [path] = res;
-    path && setWatcherInputPath(path);
+
+    if (caller === "input") {
+      path && setWatcherInputPath(path);
+    }
+
+    if (caller === "output") {
+      path && setWatcherOutputPath(path);
+    }
     console.log(path);
   };
 
@@ -271,6 +292,7 @@ const Home = () => {
             <Modal
               _selectWatcherDirectory={selectWatcherDirectory}
               _watcherInputPath={watcherInputPath || ""}
+              _watcherOutputPath={watcherOutputPath || ""}
             />
           )}
           <button
