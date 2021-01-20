@@ -255,7 +255,7 @@ const Home = () => {
       }
     } else {
       addToast("Watcher Created", { appearance: "success" });
-      // setSelectedFile(null);
+      setOpenModal(false);
     }
   };
 
