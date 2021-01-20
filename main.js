@@ -1,4 +1,10 @@
-const { BrowserWindow, app, ipcMain, dialog } = require("electron");
+const {
+  BrowserWindow,
+  app,
+  ipcMain,
+  ipcRenderer,
+  dialog,
+} = require("electron");
 const path = require("path");
 const chokidar = require("chokidar");
 const csv = require("csv-parser");
@@ -50,69 +56,63 @@ ipcMain.handle("selectWatcherDirectory", async () => {
   });
   return filePaths;
 });
-ipcMain.handle("startWatcher", async (_, filePath) => {
-  function startWatcher(path) {
-    const watcher = chokidar.watch(path, {
-      ignored: /[\/\\]\./,
-      persistent: true,
-    });
 
-    function onWatcherReady() {
-      console.info("from here check realchange, initai scan completed");
+ipcMain.handle(
+  "startWatcher",
+  async (_, folderToBeWatched, folderToBeSaved) => {
+    function startWatcher(paths) {
+      //pass folderToBeWatched, and FolderToBeSaved to add
+      //says that watch takes arrays too? confused
+      const path = ["/", "/home"];
+      const watcher = chokidar.watch(path, {
+        ignored: /[\/\\]\./,
+        persistent: true,
+        ignoreInitial: true,
+      });
+
+      function onWatcherReady() {
+        console.info("from here check realchange, initai scan completed");
+      }
+
+      watcher
+        .on("add", function (path) {
+          console.log(path, "path");
+          // processFileNow(_, folderToBeWatched, folderToBeSaved);
+        })
+        .on("addDir", function (path) {
+          console.log("Directory", path, "has been added");
+        })
+        .on("change", function (path) {
+          console.log("File", path, "has been changed");
+        })
+        .on("unlink", function (path) {
+          console.log("File", path, "has been removed");
+        })
+        .on("unlinkDir", function (path) {
+          console.log("Directory", path, "has been removed");
+        })
+        .on("error", function (error) {
+          console.log("Error happened", error);
+        })
+        .on("ready", onWatcherReady)
+        .on("raw", function (event, path, details) {
+          // This event should be triggered everytime something happens.
+          console.log("Raw event info:", event, path, details);
+        });
     }
 
-    watcher
-      .on("add", function (path) {
-        console.log("File", path, "has been added");
-      })
-      .on("addDir", function (path) {
-        console.log("Directory", path, "has been added");
-      })
-      .on("change", function (path) {
-        console.log("File", path, "has been changed");
-      })
-      .on("unlink", function (path) {
-        console.log("File", path, "has been removed");
-      })
-      .on("unlinkDir", function (path) {
-        console.log("Directory", path, "has been removed");
-      })
-      .on("error", function (error) {
-        console.log("Error happened", error);
-      })
-      .on("ready", onWatcherReady)
-      .on("raw", function (event, path, details) {
-        // This event should be triggered everytime something happens.
-        console.log("Raw event info:", event, path, details);
-      });
+    if (folderToBeWatched) {
+      console.log("starting watcher with", folderToBeSaved);
+      const path = folderToBeWatched + "^" + folderToBeSaved;
+      startWatcher(path);
+    } else {
+      console.log("No path selected");
+    }
   }
+);
 
-  //opens select direction for tracker dialogue
-  // const { filePaths } = await dialog.showOpenDialog({
-  //   properties: ["openDirectory"],
-  // });
-
-  //if file paths array exists grab first one
-
-  if (filePath) {
-    console.log("starting watcher with", filePath);
-    startWatcher(filePath);
-  } else {
-    console.log("No path selected");
-  }
-
-  // return function test(path) {
-  //   if (path) {
-  //     // Start to watch the selected path
-  //     startWatcher(path[0]);
-  //   } else {
-  //     console.log("No path selected");
-  //   }
-  // };
-});
-
-ipcMain.handle("processFile", (_, inFilePath, outFile) => {
-  const { filePath: outFilePath } = outFile;
+const processFileNow = async (_, inFilePath, outFile) => {
+  const outFilePath = outFile.filePath || outFile;
 
   const csvWriter = createCsvWriter({
     path: outFilePath,
@@ -139,6 +139,8 @@ ipcMain.handle("processFile", (_, inFilePath, outFile) => {
         });
       });
   });
-});
+};
+
+ipcMain.handle("processFile", processFileNow);
 
 app.whenReady().then(createWindow);

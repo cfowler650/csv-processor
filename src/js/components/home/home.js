@@ -169,14 +169,7 @@ const Modal = ({
           </button>
         )}
       </div>
-      <div className="modal-form-input">
-        <div>Check Folder Interval:</div>
-        <input type="number" id="quantity" name="quantity" min="1" max="5" />
-        <select name="cars" id="cars">
-          <option value="seconds">Sec</option>
-          <option value="minutes">Min</option>
-        </select>
-      </div>
+
       <div>
         <button
           onClick={_createWatcher}
@@ -240,10 +233,12 @@ const Home = () => {
 
   const handleWatcher = async (e) => {
     e.preventDefault();
-    // console.log(watcherInputPath, " watcherInputPath");
-    const watcherInputPath = "/Users/caleb/Desktop/jointsong";
-    const res = await electron.fileApi.startWatcher(watcherInputPath);
-    console.log(res, " resposne");
+    const watcherInputPath = "/Users/caleb/Desktop/inputFiles";
+    const watcherOutputPath = "/Users/caleb/Desktop/outputFiles";
+    const res = await electron.fileApi.startWatcher(
+      watcherInputPath,
+      watcherOutputPath
+    );
   };
 
   const displayWatcherSettings = (e) => {
