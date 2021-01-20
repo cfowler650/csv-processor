@@ -1,6 +1,6 @@
 const { BrowserWindow, app, ipcMain, dialog } = require("electron");
 const path = require("path");
-
+const chokidar = require("chokidar");
 const csv = require("csv-parser");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
@@ -43,6 +43,77 @@ ipcMain.handle("saveFile", () => {
   return dialog.showSaveDialog({
     filters: [{ name: "CSV", extensions: ["csv"] }],
   });
+});
+ipcMain.handle("selectWatcherDirectory", async () => {
+  const { filePaths } = await dialog.showOpenDialog({
+    properties: ["openDirectory"],
+  });
+  return filePaths;
+});
+ipcMain.handle("startWatcher", async () => {
+  function startWatcher(path) {
+    const watcher = chokidar.watch(path, {
+      ignored: /[\/\\]\./,
+      persistent: true,
+    });
+
+    function onWatcherReady() {
+      console.info("from here check realchange, initai scan completed");
+    }
+
+    watcher
+      .on("add", function (path) {
+        console.log("File", path, "has been added");
+      })
+      .on("addDir", function (path) {
+        console.log("Directory", path, "has been added");
+      })
+      .on("change", function (path) {
+        console.log("File", path, "has been changed");
+      })
+      .on("unlink", function (path) {
+        console.log("File", path, "has been removed");
+      })
+      .on("unlinkDir", function (path) {
+        console.log("Directory", path, "has been removed");
+      })
+      .on("error", function (error) {
+        console.log("Error happened", error);
+      })
+      .on("ready", onWatcherReady)
+      .on("raw", function (event, path, details) {
+        // This event should be triggered everytime something happens.
+        console.log("Raw event info:", event, path, details);
+      });
+  }
+
+  //opens select direction for tracker dialogue
+  const { filePaths } = await dialog.showOpenDialog({
+    properties: ["openDirectory"],
+  });
+
+  //if file paths array exists grab first one
+  if (filePaths) {
+    console.log("starting watcher with", filePaths[0]);
+    startWatcher(filePaths[0]);
+  } else {
+    console.log("No path selected");
+  }
+  // if (path) {
+  //   // Start to watch the selected path
+  //   startWatcher(path[0]);
+  // } else {
+  //   console.log("No path selected");
+  // }
+
+  // return function test(path) {
+  //   if (path) {
+  //     // Start to watch the selected path
+  //     startWatcher(path[0]);
+  //   } else {
+  //     console.log("No path selected");
+  //   }
+  // };
 });
 
 ipcMain.handle("processFile", (_, inFilePath, outFile) => {

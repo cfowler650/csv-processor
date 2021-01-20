@@ -108,6 +108,7 @@ const FileUploader = ({ _handleSelectFile }) => {
 const Home = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFilePath, setSelectedFilePath] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { addToast } = useToasts();
 
@@ -150,6 +151,82 @@ const Home = () => {
     }
   };
 
+  const handleWatcher = async (e) => {
+    e.preventDefault();
+    const res = await electron.fileApi.startWatcher();
+
+    console.log(res);
+  };
+
+  const Modal = () => {
+    const handleFormInput = async (e) => {
+      const selectWatchDirectory = async () => {
+        const res = await electron.fileApi.selectWatcherDirectory();
+        console.log(res);
+      };
+      let selected = e.target.name;
+
+      if (selected === "input") {
+        selectWatchDirectory();
+      }
+      if (selected === "output") {
+        selectOuputDirectory();
+      }
+    };
+
+    return (
+      <div className={"modal"}>
+        <div className="modal-form-input">
+          <div>Input Path:</div>
+          <button
+            onClick={handleFormInput}
+            name="input"
+            className="modal-form-button"
+          >
+            Select
+          </button>
+        </div>
+        <div className="modal-form-input">
+          <div>Output Path:</div>
+          <button
+            name="output"
+            onClick={handleFormInput}
+            className="modal-form-button"
+          >
+            Select
+          </button>
+        </div>
+        <div className="modal-form-input">
+          <div>Check Folder Interval:</div>
+          <input type="number" id="quantity" name="quantity" min="1" max="5" />
+          <select name="cars" id="cars">
+            <option value="seconds">Sec</option>
+            <option value="minutes">Min</option>
+          </select>
+        </div>
+        <div>
+          <button
+            style={{
+              position: "absolute",
+              top: "80%",
+              left: "50%",
+              tranform: "translate(-50%, -50%)",
+            }}
+            className="modal-form-button createWatcherBrn"
+          >
+            Create A Watcher
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const displayWatcherSettings = (e) => {
+    e.preventDefault();
+    // alert("displaywatcher");
+    setOpenModal(!openModal);
+  };
+
   return (
     <>
       <Header />
@@ -163,6 +240,21 @@ const Home = () => {
             className={`btn ${isLoading && "button is-loading"}`}
           >
             Run
+          </button>
+          {/* <button
+            onClick={handleWatcher}
+            className={`btn ${isLoading && "button is-loading"}`}
+          >
+            Start Watcher
+          </button> */}
+          {/* when you highlight button the middle swaps out for word of button on mouse enter and leave */}
+
+          {openModal && <Modal />}
+          <button
+            onClick={displayWatcherSettings}
+            className={`btn ${isLoading && "button is-loading"}`}
+          >
+            Open Watcher Settings
           </button>
         </div>
       </div>
